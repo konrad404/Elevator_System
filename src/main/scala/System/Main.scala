@@ -28,7 +28,7 @@ object Main extends App{
     val input = scala.io.StdIn.readLine().toInt
     input match {
       case 1 => system.step()
-      case 2 => {
+      case 2 =>
         println("floor:")
         val floor = scala.io.StdIn.readInt()
         println("up: 1, down: -1")
@@ -36,8 +36,7 @@ object Main extends App{
         println("destination:")
         val dest = scala.io.StdIn.readInt()
         system.pickup(floor, direction, dest)
-      }
-      case 3 => {
+      case 3 =>
         println("elevatorId:")
         val id = scala.io.StdIn.readInt()
         println("floor:")
@@ -45,7 +44,6 @@ object Main extends App{
         println("direction: -1 -> DOWN; 0 -> STILL; 1 -> UP")
         val direction = scala.io.StdIn.readInt()
         system.update(id, floor, Direction.mapIntToDirection(direction))
-      }
       case 4 => stillGoing = 1
       case _ => println("wrong command")
     }
