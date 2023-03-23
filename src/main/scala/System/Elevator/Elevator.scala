@@ -18,7 +18,11 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
 
   def getFloor: Int = currFloor
 
-  def getDirection: Direction.type = Direction
+  def setFloor(floor: Int): Unit = currFloor = floor
+
+  def getDirection: Direction = direction
+
+  def setDirection(direction: Direction): Unit = this.direction = direction
 
   def getId: Int = id
 
@@ -26,7 +30,11 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
   def getStatus: String = "id: " + id.toString + " Floor: " + currFloor.toString + " direction: " +  direction.toString
 
 //  Dodanie nowego miejsca odbioru pasażerów dla widny
-  def addNewDest(pickup: Pickup): Unit = this.pickup = pickup
+  def addNewPickup(pickup: Pickup): Unit = {
+    println("id: ", id, " getting pickup: ", pickup)
+    if(this.pickup != null) observer.passPickup(this.pickup)
+    this.pickup = pickup
+  }
 
   def passPickup(): Unit = {
     observer.passPickup(pickup)
@@ -52,7 +60,7 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
 //  Dodanie nowego piętra docelowego z środka windy
   def addFloorToVisit(destFloor: Int): Unit = {
     if(floorsToVisit.isEmpty) direction = Direction.getDirectionToMove(currFloor, destFloor)
-    if(Direction.getDirectionToMove(currFloor, pickup.floor) != direction) {
+    if(pickup != null && Direction.getDirectionToMove(currFloor, pickup.floor) != direction) {
       passPickup()
     }
     if (!floorsToVisit.contains(destFloor)) floorsToVisit.add(destFloor)
@@ -78,14 +86,25 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
 
   def open(): Unit = {
     if(floorsToVisit.contains(currFloor)) floorsToVisit -= currFloor
-    if(pickup.floor == currFloor) pickup = null // pickup done
-//    TODO: opening doors
+//    TODO: double if
+    if(pickup != null && pickup.floor == currFloor) {
+      val destination: Int = pickup.destination
+      pickup = null
+      addFloorToVisit(destination)
+    }
+    if (floorsToVisit.isEmpty && pickup == null) direction = STILL
+  }
+
+  def newDirection(): Direction = {
+    if(floorsToVisit.nonEmpty) Direction.getDirectionToMove(currFloor, floorsToVisit.head)
+    else if(pickup != null) Direction.getDirectionToMove(currFloor, pickup.floor)
+    else STILL
   }
 
 
   def step(): Unit = {
 //    TODO: check if you need to teke pasangers or make move
-    if(floorsToVisit.contains(currFloor) || pickup.floor == currFloor) {
+    if(floorsToVisit.contains(currFloor) || (pickup != null  && pickup.floor == currFloor)) {
 //      można tu dodać jakiś posób na opóźnienie
       open()
     }
@@ -93,6 +112,7 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
       direction match {
         case UP => moveUp()
         case DOWN => moveDown()
+        case STILL => direction = newDirection()
       }
     }
 

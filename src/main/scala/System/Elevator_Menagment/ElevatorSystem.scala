@@ -1,6 +1,6 @@
 package System.Elevator_Menagment
 
-import System.Elevator.Elevator
+import System.Elevator.{Elevator, ElevatorApi}
 import System.Enums.{Direction, STILL}
 
 import scala.collection.mutable
@@ -9,35 +9,66 @@ object ElevatorSystem {
 
 }
 
-class ElevatorSystem(elevatorsNumber: Int, floors: Int, floorsPerStep: Int){
+class ElevatorSystem(elevatorsNumber: Int, floors: Int){
 
   val observer = new Observer()
 
-  val elevators: mutable.Set[Elevator] = (for (i <- 0 until elevatorsNumber)
+  var elevators: mutable.Set[ElevatorApi] = (for (i <- 0 until elevatorsNumber)
     yield new Elevator(i, 0, STILL, observer)).to(collection.mutable.Set)
 
   observer.addElevatorSet(elevators)
 
-  def pickup(floor: Int, num: Int): Unit = {
-//    observer.getElevatorForPickup(floor, Direction.mapIntToDirection(num)).addFloorToVisit(floor)
-    observer.addPickup(Pickup(floor, Direction.mapIntToDirection(num)))
+  def pickup(floor: Int, num: Int, dest: Int): Unit = {
+    observer.addPickup(Pickup(floor, Direction.mapIntToDirection(num), dest))
+  }
+
+  def addFloorToElevatorRoute(elevatorId: Int, floor: Int): Unit = {
+    elevators.foreach(elevator => if (elevator.getId == elevatorId) elevator.addFloorToVisit(floor))
+  }
+
+  def elevatorDistance(pickup: Pickup, elevator: ElevatorApi): Int = (pickup.floor - elevator.getFloor).abs
+
+  def getBestElevator(pickup: Pickup): ElevatorApi = {
+    var bestElevator:ElevatorApi = null
+    var bestElevatorDist: Int = Int.MaxValue
+
+    elevators.foreach(elevator =>{
+      if(elevator.isPickupPossible(pickup) && elevatorDistance(pickup, elevator) < bestElevatorDist){
+        bestElevator = elevator
+        bestElevatorDist = elevatorDistance(pickup, elevator)
+      }
+    })
+
+    bestElevator
   }
 
   def checkPickups(): Unit = {
-    val awaitingPickups = observer.getPickups()
+    val awaitingPickups = observer.getPickups
+    val newAwaitingPickups: mutable.Set[Pickup] = mutable.Set()
 
     awaitingPickups.foreach(pickup =>{
-
+      val elevator: ElevatorApi = getBestElevator(pickup)
+      if(elevator != null) elevator.addNewPickup(pickup)
+      else newAwaitingPickups.add(pickup)
     })
+
+//    println("new pickups: ", newAwaitingPickups)
+    observer.setPickups(newAwaitingPickups)
   }
 
-  def update(elevatodId: Int, floor: Int, direction: Int, queue: mutable.Queue[Int] = mutable.Queue()): Unit = ???
+  def update(elevatorId: Int, floor: Int, direction: Direction): Unit = {
+    elevators.foreach(elevator => if (elevator.getId == elevatorId) {
+        elevator.setFloor(floor)
+        elevator.setDirection(direction)
+      })
+  }
 
   def step(): Unit = {
     checkPickups()
-
     elevators.foreach(elevators => elevators.step())
   }
+
+
 
 
 
