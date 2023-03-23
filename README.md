@@ -7,7 +7,7 @@ Istnieją 2 najważniejsze części systemu:
  - System zarządzania windami (folder: ElevatorMenagament)
  
 Aby skorzystać z systemu nalezy uruchomić plik objekt Main, który pozwoli korzystając
-z klawiatury przeprowadzić samodzielna symulację systemu windowego w budynku. Pozwala on wybrac ilość wind
+z klawiatury przeprowadzić samodzielna symulację systemu windowego w budynku. Pozwala on wybrac za pośrednictwem terminala ilość wind
 oraz pięter w budynku a następnie daje możliwośc tworzenia zapytań pickup -> wzywania windy z dowolnego piętra,
 update -> pozwalającego na zmodyfikowanie miejjsca i kierunku windy / brzmi teleportacja windy :)  /,
 step() -> odpalającego jeden krok symulacji (przejazd o 1 piątro lub odebranie/wypuszczenie pasażerów na danym piętrze)
@@ -26,4 +26,9 @@ aby po odebraniu mieszkańca z piętra można było zasymulowac jego wybór pię
 wazne poneiważ w moim podejsciu piętra wybrane z środka windy mają wiekszy priorytet niz wezwania z zewnątrz
    (z pięter).
 
-System zarzadzania windami skłąda się z 
+System zarzadzania windami skłąda się z głównego systemu: ElevatorSystem który odpowiada za logikę całości systemu. Przyjmuje on wezwania windy z pięter
+i przeprowadza kroki symulacji, aktualizujac stany wind i szukajac najlepszej windy do przyjęcia wezwania.
+Uzyłem wzorca Obserwator do przyjmowania wiadomosci z windy, ponieważ założylem, że jeżeli winda zmieni swój docelowy keirunek,
+w skótek np: będącego wewnątrz człowieka lub wezwania na drodze danej windy powinna ona powiadomić o tym że nie dotrze do swojego celu.
+Za to odpowiada klasa Obserwator która przechowuje liste wind oraz wezwań i aktualizuje je na podstawie informacji otrzymanych od wind jak i Elevator Symulatora.
+
