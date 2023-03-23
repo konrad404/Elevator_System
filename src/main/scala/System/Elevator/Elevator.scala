@@ -26,7 +26,7 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, maxFloor: I
 
   def getId: Int = id
 
-  def getStatus: String = "id: " + id.toString + " Floor: " + currFloor.toString + " direction: " +  direction.toString
+  def getStatus: String = "id: " + id.toString + " floor: " + currFloor.toString + " direction: " +  direction.toString
 
 //  Dodanie nowego miejsca odbioru pasażerów dla widny
   def addNewPickup(pickup: Pickup): Unit = {
