@@ -1,7 +1,7 @@
 package System.Elevator
 
-import System.Elevator_Menagment.{Observer, Pickup}
-import System.Enums.{DOWN, Direction, STILL, UP}
+import System.ElevatorMenagment.Observer
+import System.Utils.{DOWN, Direction, Pickup, STILL, UP}
 
 import scala.collection.mutable
 
@@ -9,7 +9,7 @@ object Elevator{
 
 }
 
-class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: Observer) extends ElevatorApi {
+class Elevator (id: Int, startFloor: Int, startDirection: Direction, maxFloor: Int, observer: Observer) extends ElevatorApi {
   var currFloor: Int = startFloor
   var pickup: Pickup = null
   val floorsToVisit : mutable.Set[Int] = mutable.Set()
@@ -26,7 +26,6 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
 
   def getId: Int = id
 
-//  TODO: elevator status / nazwa zmień
   def getStatus: String = "id: " + id.toString + " Floor: " + currFloor.toString + " direction: " +  direction.toString
 
 //  Dodanie nowego miejsca odbioru pasażerów dla widny
@@ -42,11 +41,14 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
   }
 
   def isNewPickupCloser(pickup: Pickup): Boolean = {
-    val oldPickupFloorDiff = this.pickup.floor - currFloor
-    val newPickupFloorDiff = pickup.floor - currFloor
-    direction match {
-      case UP => newPickupFloorDiff > 0 && newPickupFloorDiff < oldPickupFloorDiff
-      case DOWN => newPickupFloorDiff < 0 && newPickupFloorDiff > oldPickupFloorDiff
+    if (this.pickup == null) true
+    else {
+      val oldPickupFloorDiff = this.pickup.floor - currFloor
+      val newPickupFloorDiff = pickup.floor - currFloor
+      direction match {
+        case UP => newPickupFloorDiff > 0 && newPickupFloorDiff < oldPickupFloorDiff
+        case DOWN => newPickupFloorDiff < 0 && newPickupFloorDiff > oldPickupFloorDiff
+      }
     }
   }
 
@@ -77,16 +79,17 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
   }
 
   def moveUp(): Unit = {
-    currFloor+=1
+    if(currFloor < maxFloor) currFloor+=1
+    else direction = STILL
   }
 
   def moveDown(): Unit = {
-    currFloor-=1
+    if(currFloor > 0) currFloor-=1
+    else direction = STILL
   }
 
   def open(): Unit = {
     if(floorsToVisit.contains(currFloor)) floorsToVisit -= currFloor
-//    TODO: double if
     if(pickup != null && pickup.floor == currFloor) {
       val destination: Int = pickup.destination
       pickup = null
@@ -103,7 +106,6 @@ class Elevator (id: Int, startFloor: Int, startDirection: Direction, observer: O
 
 
   def step(): Unit = {
-//    TODO: check if you need to teke pasangers or make move
     if(floorsToVisit.contains(currFloor) || (pickup != null  && pickup.floor == currFloor)) {
 //      można tu dodać jakiś posób na opóźnienie
       open()

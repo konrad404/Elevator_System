@@ -1,7 +1,7 @@
-package System.Elevator_Menagment
+package System.ElevatorMenagment
 
 import System.Elevator.{Elevator, ElevatorApi}
-import System.Enums.{Direction, STILL}
+import System.Utils.{Direction, Pickup, STILL}
 
 import scala.collection.mutable
 
@@ -14,7 +14,7 @@ class ElevatorSystem(elevatorsNumber: Int, floors: Int){
   val observer = new Observer()
 
   var elevators: mutable.Set[ElevatorApi] = (for (i <- 0 until elevatorsNumber)
-    yield new Elevator(i, 0, STILL, observer)).to(collection.mutable.Set)
+    yield new Elevator(i, 0, STILL, floors, observer)).to(collection.mutable.Set)
 
   observer.addElevatorSet(elevators)
 
@@ -22,9 +22,6 @@ class ElevatorSystem(elevatorsNumber: Int, floors: Int){
     observer.addPickup(Pickup(floor, Direction.mapIntToDirection(num), dest))
   }
 
-  def addFloorToElevatorRoute(elevatorId: Int, floor: Int): Unit = {
-    elevators.foreach(elevator => if (elevator.getId == elevatorId) elevator.addFloorToVisit(floor))
-  }
 
   def elevatorDistance(pickup: Pickup, elevator: ElevatorApi): Int = (pickup.floor - elevator.getFloor).abs
 
@@ -52,13 +49,12 @@ class ElevatorSystem(elevatorsNumber: Int, floors: Int){
       else newAwaitingPickups.add(pickup)
     })
 
-//    println("new pickups: ", newAwaitingPickups)
     observer.setPickups(newAwaitingPickups)
   }
 
   def update(elevatorId: Int, floor: Int, direction: Direction): Unit = {
     elevators.foreach(elevator => if (elevator.getId == elevatorId) {
-        elevator.setFloor(floor)
+        if (floor > 0 && floor <= this.floors)  elevator.setFloor(floor)
         elevator.setDirection(direction)
       })
   }
@@ -68,12 +64,6 @@ class ElevatorSystem(elevatorsNumber: Int, floors: Int){
     elevators.foreach(elevators => elevators.step())
   }
 
-
-
-
-
-
-//  TODO: moze coś w stylu elevator_status zamiast całej klasy?
   def status(): Array[String] = elevators.toArray.map(elevator => elevator.getStatus)
 
   def printStatus(): Unit = {

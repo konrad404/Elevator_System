@@ -1,2 +1,29 @@
 # Elevator_System
 
+System odpowiadajacy za obsługe wind w budynku.
+
+Istnieją 2 najważniejsze części systemu:
+ - Reprezentacja windy (folder: Elevator)
+ - System zarządzania windami (folder: ElevatorMenagament)
+ 
+Aby skorzystać z systemu nalezy uruchomić plik objekt Main, który pozwoli korzystając
+z klawiatury przeprowadzić samodzielna symulację systemu windowego w budynku. Pozwala on wybrac ilość wind
+oraz pięter w budynku a następnie daje możliwośc tworzenia zapytań pickup -> wzywania windy z dowolnego piętra,
+update -> pozwalającego na zmodyfikowanie miejjsca i kierunku windy / brzmi teleportacja windy :)  /,
+step() -> odpalającego jeden krok symulacji (przejazd o 1 piątro lub odebranie/wypuszczenie pasażerów na danym piętrze)
+
+
+
+Reprezentacja windy składa się z klasy Elevator oraz traita ElevatorApi służącego
+za interface za pomocą którego pozostała część systemu będzie komunikować się z instancjami tej klasy.
+1. ElevatorApi: definiuje podstawowe Api do obsługi windy, umożliwiając takie rzeczy jak:
+otrzymanie informacji o id windy, piętrze, na którym się znajduje, czy kierunku, w którym winda jedzie.
+Ponadto za jego pośrednictwem ElevatorSystem komunikuje sie z windami.
+2. Elevator: klasa odpowiadająca za logikę działania windy w systemie, korzysta z nie wspomnainego Enuma: Direction, mogącego przyjmować 
+wartośći: UP, STILL, DOWN, mówiącego nam w jakim kierunku winda się porusza. Ważnym nowym składnikiem jest też case klasa Pickup.
+Odpowiada ona za zarządanie windy z konkretnego piętra i w konkretnym kierunku. Z powodów czysto symulacyjych zawarłem tam rownież konkretne piętro na które użytkownik windy będzie chciał jechać,
+aby po odebraniu mieszkańca z piętra można było zasymulowac jego wybór piętra z środka windy. Jest to
+wazne poneiważ w moim podejsciu piętra wybrane z środka windy mają wiekszy priorytet niz wezwania z zewnątrz
+   (z pięter).
+
+System zarzadzania windami skłąda się z 

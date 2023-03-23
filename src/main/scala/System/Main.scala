@@ -1,7 +1,7 @@
 package System
 
-import System.Elevator_Menagment.{ElevatorSystem, Pickup}
-import System.Enums.{Direction, UP}
+import System.ElevatorMenagment.ElevatorSystem
+import System.Utils.{Direction, UP}
 
 import scala.collection.mutable
 

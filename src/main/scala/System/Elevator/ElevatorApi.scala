@@ -1,7 +1,6 @@
 package System.Elevator
 
-import System.Elevator_Menagment.Pickup
-import System.Enums.Direction
+import System.Utils.{Direction, Pickup}
 
 trait ElevatorApi {
   def getFloor: Int

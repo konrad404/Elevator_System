@@ -1,7 +1,7 @@
-package System.Elevator_Menagment
+package System.ElevatorMenagment
 
 import System.Elevator.{Elevator, ElevatorApi}
-import System.Enums.Direction
+import System.Utils.{Direction, Pickup}
 
 import scala.collection.mutable
 

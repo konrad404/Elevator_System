@@ -1,4 +1,4 @@
-package System.Enums
+package System.Utils
 
 sealed trait Direction
 
